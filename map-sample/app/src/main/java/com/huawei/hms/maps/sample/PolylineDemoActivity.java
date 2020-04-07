@@ -30,10 +30,12 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.huawei.hms.maps.CameraUpdate;
 import com.huawei.hms.maps.CameraUpdateFactory;
 import com.huawei.hms.maps.HuaweiMap;
 import com.huawei.hms.maps.OnMapReadyCallback;
 import com.huawei.hms.maps.SupportMapFragment;
+import com.huawei.hms.maps.model.LatLngBounds;
 import com.huawei.hms.maps.sample.utils.MapUtils;
 import com.huawei.hms.maps.model.LatLng;
 import com.huawei.hms.maps.model.Polyline;
@@ -41,6 +43,7 @@ import com.huawei.hms.maps.model.PolylineOptions;
 import com.huawei.hms.maps.util.LogM;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.huawei.hms.maps.sample.utils.CheckUtils.checkIsEdit;
@@ -106,8 +109,11 @@ public class PolylineDemoActivity extends AppCompatActivity implements OnMapRead
         if (null != mPolyline) {
             mPolyline.remove();
         }
+
+        List<LatLng> points = Arrays.asList(MapUtils.FRANCE, MapUtils.FRANCE1, MapUtils.FRANCE2, MapUtils.FRANCE3);
+
         mPolyline = hMap.addPolyline(
-                new PolylineOptions().add(MapUtils.FRANCE, MapUtils.FRANCE1, MapUtils.FRANCE2, MapUtils.FRANCE3)
+                new PolylineOptions().addAll(points)
                         .color(Color.BLUE)
                         .width(3));
         hMap.setOnPolylineClickListener(new HuaweiMap.OnPolylineClickListener() {
@@ -117,6 +123,15 @@ public class PolylineDemoActivity extends AppCompatActivity implements OnMapRead
                 LogM.i(TAG, "onMapReady:onPolylineClick ");
             }
         });
+
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+        for(LatLng point : points) {
+            boundsBuilder.include(point);
+        }
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(),0);
+        hMap.animateCamera(cameraUpdate);
+
     }
 
     /**
