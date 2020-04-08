@@ -20,6 +20,7 @@
 
 package com.huawei.hms.maps.sample;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -124,12 +125,15 @@ public class PolylineDemoActivity extends AppCompatActivity implements OnMapRead
             }
         });
 
+        int bottomPadding = pxFromDp(this, 250); // Half of the map
+        int topPadding = pxFromDp(this, 25);
+        hMap.setPadding(0, topPadding, 0, bottomPadding);
+
         List<LatLng> boundsPoints = calculateBoundsPoints(points);
         LatLngBounds latLngBounds = new LatLngBounds(boundsPoints.get(0), boundsPoints.get(1));
 
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(latLngBounds, 0);
         hMap.animateCamera(cameraUpdate);
-
     }
 
     public List<LatLng> calculateBoundsPoints(List<LatLng> points) {
@@ -155,6 +159,10 @@ public class PolylineDemoActivity extends AppCompatActivity implements OnMapRead
         return Arrays.asList(new LatLng(minLat, minLng), new LatLng(maxLat, maxLng));
     }
 
+
+    public int pxFromDp(Context context, float dp) {
+        return (int) (dp * context.getResources().getDisplayMetrics().density);
+    }
 
     /**
      * Remove the polyline
