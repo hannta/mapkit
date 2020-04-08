@@ -35,11 +35,11 @@ import com.huawei.hms.maps.CameraUpdateFactory;
 import com.huawei.hms.maps.HuaweiMap;
 import com.huawei.hms.maps.OnMapReadyCallback;
 import com.huawei.hms.maps.SupportMapFragment;
-import com.huawei.hms.maps.model.LatLngBounds;
-import com.huawei.hms.maps.sample.utils.MapUtils;
 import com.huawei.hms.maps.model.LatLng;
+import com.huawei.hms.maps.model.LatLngBounds;
 import com.huawei.hms.maps.model.Polyline;
 import com.huawei.hms.maps.model.PolylineOptions;
+import com.huawei.hms.maps.sample.utils.MapUtils;
 import com.huawei.hms.maps.util.LogM;
 
 import java.util.ArrayList;
@@ -124,15 +124,37 @@ public class PolylineDemoActivity extends AppCompatActivity implements OnMapRead
             }
         });
 
-        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-        for(LatLng point : points) {
-            boundsBuilder.include(point);
-        }
+        List<LatLng> boundsPoints = calculateBoundsPoints(points);
+        LatLngBounds latLngBounds = new LatLngBounds(boundsPoints.get(0), boundsPoints.get(1));
 
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(),0);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(latLngBounds, 0);
         hMap.animateCamera(cameraUpdate);
 
     }
+
+    public List<LatLng> calculateBoundsPoints(List<LatLng> points) {
+        double maxLng = points.get(0).longitude;
+        double minLng = points.get(0).longitude;
+        double maxLat = points.get(0).latitude;
+        double minLat = points.get(0).latitude;
+
+        for (LatLng point : points) {
+            if (point.longitude > maxLng) {
+                maxLng = point.longitude;
+            } else if (point.longitude < minLng) {
+                minLng = point.longitude;
+            }
+
+            if (point.latitude > maxLat) {
+                maxLat = point.latitude;
+            } else if (point.latitude < minLat) {
+                minLat = point.latitude;
+            }
+        }
+
+        return Arrays.asList(new LatLng(minLat, minLng), new LatLng(maxLat, maxLng));
+    }
+
 
     /**
      * Remove the polyline
